@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class GuessPage extends StatefulWidget {
@@ -28,7 +30,9 @@ class _GuessPageState extends State<GuessPage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      // _counter++;
+      Random random = Random();
+      _counter = random.nextInt(100);
     });
   }
 
@@ -70,7 +74,7 @@ class _GuessPageState extends State<GuessPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              '点击生成随机数值：',
             ),
             Text(
               '$_counter',
