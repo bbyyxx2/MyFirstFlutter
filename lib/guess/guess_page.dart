@@ -1,18 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class GuessPage extends StatefulWidget {
   const GuessPage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -21,70 +13,148 @@ class GuessPage extends StatefulWidget {
 }
 
 class _GuessPageState extends State<GuessPage> {
-  int _counter = 0;
+  String _counter = '';
+  int _randomValue = 0;
+  int _guessStatus = 0;
+  final TextEditingController _controller = TextEditingController();
 
-  void _incrementCounter() {
+  void _generateRandomValue() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      // _counter++;
       Random random = Random();
-      _counter = random.nextInt(100);
+      _randomValue = random.nextInt(100);
+      _counter = '';
+      //根据_randomValue的位数来设置_counter是一个*还是多个*的string
+      for (int i = 0; i < _randomValue.toString().length; i++) {
+        _counter += '*';
+      }
+    });
+  }
+
+  void _checkValue() {
+    setState(() {
+      int guess = int.parse(_controller.text);
+      if (guess == _randomValue) {
+        _counter = _randomValue.toString();
+        _guessStatus = 0;
+      } else if (guess > _randomValue) {
+        _guessStatus = 1;
+      } else if (guess < _randomValue) {
+        _guessStatus = -1;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              '点击生成随机数值：',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        leading: const Icon(Icons.menu, color: Colors.black),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check, color: Colors.blue),
+            onPressed: _checkValue,
+            splashRadius: 20,
+          ),
+        ],
+        title: TextField(
+          controller: _controller,
+          keyboardType: TextInputType.number, //键盘类型: 数字
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          onSubmitted:(value){
+            _checkValue();
+          },
+          decoration: const InputDecoration( //装饰
+              filled: true,
+              //填充
+              fillColor: Color(0xffF3F6F9),
+              //填充颜色
+              constraints: BoxConstraints(maxHeight: 35),
+              //约束信息
+              border: UnderlineInputBorder( //边线信息
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.all(Radius.circular(6))
+              ),
+              hintText: '输入 0~99 之间的数字',
+              hintStyle: TextStyle(fontSize: 14)
+          ),
         ),
       ),
+      body: Stack(
+        children: [
+          Visibility(
+            visible: _guessStatus == 1,
+            child: Column(
+              children: [
+                Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Colors.redAccent,
+                      child: const Text(
+                        '大了',
+                        style: TextStyle(
+                            fontSize: 54,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    )),
+                const Spacer(),
+              ],
+            ),
+          ),
+          Visibility(
+            visible: _guessStatus == -1,
+            child: Column(
+              children: [
+                const Spacer(),
+                Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Colors.blueAccent,
+                      child: const Text(
+                        '小了',
+                        style: TextStyle(
+                            fontSize: 54,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ))
+              ],
+            ),
+          ),
+          Visibility(
+            visible: _guessStatus == 0,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.white
+                  ),
+                )
+              ],
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  '点击生成随机数值：',
+                ),
+                Text(
+                  _counter,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headlineMedium,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _generateRandomValue,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
