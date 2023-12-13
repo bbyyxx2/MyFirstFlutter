@@ -23,6 +23,7 @@ class _GuessPageState extends State<GuessPage> {
       Random random = Random();
       _randomValue = random.nextInt(100);
       _counter = '';
+      _guessStatus = 0;
       //根据_randomValue的位数来设置_counter是一个*还是多个*的string
       for (int i = 0; i < _randomValue.toString().length; i++) {
         _counter += '*';
