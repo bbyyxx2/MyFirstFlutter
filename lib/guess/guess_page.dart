@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_first_flutter/guess/view_result.dart';
+import 'package:toast/toast.dart';
 
 class GuessPage extends StatefulWidget {
   const GuessPage({super.key, required this.title});
@@ -48,9 +49,27 @@ class _GuessPageState extends State<GuessPage> {
 
   @override
   Widget build(BuildContext context) {
+    var toastContext = ToastContext();
+    toastContext.init(context);
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.menu, color: Colors.black),
+        leading: PopupMenuButton<String>(
+          icon: const Icon(Icons.menu, color: Colors.black),
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+             const PopupMenuItem<String>(
+              value: 'Item 1',
+              child: Text('Item 1'),
+            ),
+            const PopupMenuItem<String>(
+              value: 'Item 2',
+              child: Text('Item 2'),
+            ),
+          ],
+          onSelected: (String value) {
+            // 在这里处理选中的值
+            Toast.show(value, duration: Toast.lengthShort, gravity: Toast.bottom);
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.check, color: Colors.blue),
