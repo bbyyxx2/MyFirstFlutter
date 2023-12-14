@@ -83,37 +83,7 @@ class _GuessPageState extends State<GuessPage> {
       ),
       body: Stack(
         children: [
-          Visibility(
-            visible: _guessStatus == 1,
-            child: const Column(
-              children: [
-                ViewResult(color: Colors.redAccent, info: '大了'),
-                Spacer(),
-              ],
-            ),
-          ),
-          Visibility(
-            visible: _guessStatus == -1,
-            child: const Column(
-              children: [
-                Spacer(),
-                ViewResult(color: Colors.blueAccent, info: '小了了')
-              ],
-            ),
-          ),
-          Visibility(
-            visible: _guessStatus == 0,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    color: Colors.white
-                  ),
-                )
-              ],
-            ),
-          ),
+          ViewResult(flag: _guessStatus),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
