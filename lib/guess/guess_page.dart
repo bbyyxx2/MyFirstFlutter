@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_first_flutter/guess/view_result.dart';
 
 class GuessPage extends StatefulWidget {
   const GuessPage({super.key, required this.title});
@@ -84,41 +85,19 @@ class _GuessPageState extends State<GuessPage> {
         children: [
           Visibility(
             visible: _guessStatus == 1,
-            child: Column(
+            child: const Column(
               children: [
-                Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      color: Colors.redAccent,
-                      child: const Text(
-                        '大了',
-                        style: TextStyle(
-                            fontSize: 54,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    )),
-                const Spacer(),
+                ViewResult(color: Colors.redAccent, info: '大了'),
+                Spacer(),
               ],
             ),
           ),
           Visibility(
             visible: _guessStatus == -1,
-            child: Column(
+            child: const Column(
               children: [
-                const Spacer(),
-                Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      color: Colors.blueAccent,
-                      child: const Text(
-                        '小了',
-                        style: TextStyle(
-                            fontSize: 54,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ))
+                Spacer(),
+                ViewResult(color: Colors.blueAccent, info: '小了了')
               ],
             ),
           ),
